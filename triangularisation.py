@@ -10,40 +10,7 @@
 # Import des librairies requises
 from __future__ import print_function
 import time
-import RPi.GPIO as GPIO
 from math import *
-
-def measure(capteur):
-  """
-  Réalise la mesure du capteur passé en argument et renvoie la distance (en cm)
-
-  Parameters:
-  -----------
-  capteur : définit les pins du capteur
-    capteur[TRIG]: pin pour déclencher la mesure de distance
-    capteur[ECHO]: pin pour lecture de l'echo
-
-  Returns:
-  --------
-  float : distance en cm
-  """
-  # This function measures a distance
-  GPIO.output(capteur[TRIG], True)
-  # Wait 10us
-  time.sleep(0.00001)
-  GPIO.output(capteur[TRIG], False)
-  start = time.time()
-  
-  while GPIO.input(capteur[ECHO])==0:
-    start = time.time()
-
-  while GPIO.input(capteur[ECHO])==1:
-    stop = time.time()
-
-  elapsed = stop - start
-  distance = (elapsed * speedSound)/2
-
-  return distance
 
 
 def measure_average(capteur):
@@ -98,7 +65,7 @@ def calcule_position(c1, c2, d1, d2):
   """
 
   # Pour calculer une racine carrée, utiliser sqrt(). Exemple: sqrt(2)
-  
+
   return (p1, p2)
 
 
