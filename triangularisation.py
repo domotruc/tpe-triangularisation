@@ -65,8 +65,8 @@ def calcule_position(c1, c2, d1, d2):
   """
   
   N=(d2**2-d1**2-c2[X]**2+c1[X]**2-c2[Y]**2+c1[Y]**2)/2*(c1[Y]-c2[Y])
-  A=(c1[X]-c2[X])/(c1[Y]-c2[Y])**2+1
-  B=2*c1[Y]*(c1[X]-c2[X])/(c1[Y]-c2[Y])-2*N*(c1[X]-c2[X])/(c1[Y]-c2[Y])-2*c1[X]
+  A=((c1[X]-c2[X])/(c1[Y]-c2[Y]))**2+1
+  B=2*c1[Y]*((c1[X]-c2[X])/(c1[Y]-c2[Y]))-2*N*((c1[X]-c2[X])/(c1[Y]-c2[Y]))-2*c1[X]
   C=c1[X]**2+c1[Y]**2+N**2-d1**2-2*c1[Y]*N
   Disc=B**2-4*A*C
 
@@ -75,13 +75,14 @@ def calcule_position(c1, c2, d1, d2):
     p2={}
     p1[X]=(-B+sqrt(Disc))/2*A
     p2[X]=(-B-sqrt(Disc))/2*A
-    p1[Y]=N-p1[X]*(c1[X]-c2[X])/(c1[Y]-c2[Y])
-    p2[Y]=N-p2[X]*(c1[X]-c2[X])/(c1[Y]-c2[Y])
+    p1[Y]=N-p1[X]*((c1[X]-c2[X])/(c1[Y]-c2[Y]))
+    p2[Y]=N-p2[X]*((c1[X]-c2[X])/(c1[Y]-c2[Y]))
     return (p1, p2)
 
   if Disc==0:
     p1[X]=-B/2*A
-    p1[Y]=N-p1[X]*(c1[X]-c2[X]/c1[Y]-c2[Y])
+    p1[Y]=N-p1[X]*((c1[X]-c2[X])/(c1[Y]-c2[Y]))
+    return (p1)
 
   if Disc<0:
     return None
