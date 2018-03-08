@@ -63,30 +63,64 @@ def calcule_position(c1, c2, d1, d2):
     p2[X]: coordonnée X du point 2 (en cm)
     p2[Y]: coordonnée Y du point 2 (en cm)
   """
+  if c1[Y] != c2[Y] :
+    N=(d2**2-d1**2-c2[X]**2+c1[X]**2-c2[Y]**2+c1[Y]**2)/(2*(c1[Y]-c2[Y]))
+    A=((c1[X]-c2[X])/(c1[Y]-c2[Y]))**2+1
+    B=2*c1[Y]*((c1[X]-c2[X])/(c1[Y]-c2[Y]))-2*N*((c1[X]-c2[X])/(c1[Y]-c2[Y]))-2*c1[X]
+    C=c1[X]**2+c1[Y]**2+N**2-d1**2-2*c1[Y]*N
+    Disc=B**2-4*A*C
+    print(Disc)
 
-  N=(d2**2-d1**2-c2[X]**2+c1[X]**2-c2[Y]**2+c1[Y]**2)/(2*(c1[Y]-c2[Y]))
-  A=((c1[X]-c2[X])/(c1[Y]-c2[Y]))**2+1
-  B=2*c1[Y]*((c1[X]-c2[X])/(c1[Y]-c2[Y]))-2*N*((c1[X]-c2[X])/(c1[Y]-c2[Y]))-2*c1[X]
-  C=c1[X]**2+c1[Y]**2+N**2-d1**2-2*c1[Y]*N
-  Disc=B**2-4*A*C
-  print(Disc)
+    if Disc>0:
+      p1={}
+      p2={}
+      p1[X]=(-B+sqrt(Disc))/(2*A)
+      p2[X]=(-B-sqrt(Disc))/(2*A)
+      p1[Y]=N-p1[X]*((c1[X]-c2[X])/(c1[Y]-c2[Y]))
+      p2[Y]=N-p2[X]*((c1[X]-c2[X])/(c1[Y]-c2[Y]))
+      return (p1, p2)
 
-  if Disc>0:
+    if Disc==0:
+      p1={}
+      p2={}
+      p1[X]=-B/(2*A)
+      p1[Y]=N-p1[X]*((c1[X]-c2[X])/(c1[Y]-c2[Y]))
+      return (p1)
+
+    if Disc<0:
+      return None
+
+  if c1[Y]==c2[Y] :
     p1={}
     p2={}
-    p1[X]=(-B+sqrt(Disc))/(2*A)
-    p2[X]=(-B-sqrt(Disc))/(2*A)
-    p1[Y]=N-p1[X]*((c1[X]-c2[X])/(c1[Y]-c2[Y]))
-    p2[Y]=N-p2[X]*((c1[X]-c2[X])/(c1[Y]-c2[Y]))
-    return (p1, p2)
+    p1[X]=(d2**2-d1**2-c2[X]**2-c1[X]**2)/(2*(c1[X]-c2[X]))
+    A=1
+    B=-2*c2[Y]
+    C=c2[X]**2+p1[X]**2-2*c2[X]*p1[X]+c2[Y]**2-d2**2
+    Disc=B**2-4*A*C
+    print(Disc)
 
-  if Disc==0:
-    p1[X]=-B/(2*A)
-    p1[Y]=N-p1[X]*((c1[X]-c2[X])/(c1[Y]-c2[Y]))
-    return (p1)
+    if Disc>O:
+      p1[Y]=(-B+sqrt(Disc))/(2*A)
+      p2[Y]=(-B-sqrt(Disc))/(2*A)
+      p2[X]=p1[X]
+      return (p1, p2)
 
-  if Disc<0:
-    return None
+    if Disc==0:
+      p1[Y]=-B/(2*A)
+      return (p1)
+
+    if Disc<0:
+      return None
+      
+      
+      
+
+    
+
+  
+
+  
 
 # -----------------------
 # Main Script
@@ -109,7 +143,7 @@ speedSound = 33100 + (0.6*temperature)
 print("Ultrasonic Measurement")
 print("Speed of sound is", speedSound/100, "m/s at ", temperature, "deg")
 
-capteurs = [ {TRIG: 23, ECHO: 24, X: 0, Y: 0}, {TRIG: 5, ECHO: 6, X: 100, Y: 100} ]
+capteurs = [ {TRIG: 23, ECHO: 24, X: 0, Y: 0}, {TRIG: 5, ECHO: 6, X: 100, Y: 100}, {TRIG: 7, ECHO : 8, X: 50, Y: 0} ]
 
 # Configure les pins: TRIG -> output, ECHO -> input
 #for capteur in capteurs:
@@ -136,8 +170,10 @@ try:
       d[i] = measure_average(capteurs[i])
       print("Distance {0:1d}: {1:5.1f}".format(i, d[i]))
 
-    P=calcule_position(capteurs[0], capteurs[1], d[0], d[1])
-    print(P)
+    P1=calcule_position(capteurs[0], capteurs[1], d[0], d[1])
+    print(P1)
+    P2=calcule_position(capteur[0], capteur[2], d[0], d[2])
+    print(P2)
 
     time.sleep(1)
     print("")
