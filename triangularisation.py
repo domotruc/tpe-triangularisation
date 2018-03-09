@@ -90,7 +90,7 @@ def calcule_position(c1, c2, d1, d2):
     if Disc<0:
       return None
 
-  if c1[Y]==c2[Y] :
+  else :
     p1={}
     p2={}
     p1[X]=(d2**2-d1**2-c2[X]**2-c1[X]**2)/(2*(c1[X]-c2[X]))
@@ -100,7 +100,7 @@ def calcule_position(c1, c2, d1, d2):
     Disc=B**2-4*A*C
     print(Disc)
 
-    if Disc>O:
+    if Disc>0:
       p1[Y]=(-B+sqrt(Disc))/(2*A)
       p2[Y]=(-B-sqrt(Disc))/(2*A)
       p2[X]=p1[X]
@@ -144,7 +144,6 @@ print("Ultrasonic Measurement")
 print("Speed of sound is", speedSound/100, "m/s at ", temperature, "deg")
 
 capteurs = [ {TRIG: 23, ECHO: 24, X: 0, Y: 0}, {TRIG: 5, ECHO: 6, X: 100, Y: 100}, {TRIG: 7, ECHO : 8, X: 50, Y: 0} ]
-
 # Configure les pins: TRIG -> output, ECHO -> input
 #for capteur in capteurs:
 #  GPIO.setup(capteur[TRIG], GPIO.OUT)
@@ -163,7 +162,7 @@ time.sleep(0.5)
 # GPIO cleanup function. This will also prevent
 # the user seeing lots of unnecessary error
 # messages.
-d=range(2)
+d=range(3)
 try:
   while True:
     for i in range(len(capteurs)):
@@ -172,7 +171,7 @@ try:
 
     P1=calcule_position(capteurs[0], capteurs[1], d[0], d[1])
     print(P1)
-    P2=calcule_position(capteur[0], capteur[2], d[0], d[2])
+    P2=calcule_position(capteurs[0], capteurs[2], d[0], d[2])
     print(P2)
 
     time.sleep(1)
