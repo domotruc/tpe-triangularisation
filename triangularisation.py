@@ -152,7 +152,8 @@ print("Vitesse du son prise en compte:", speedSound/100, "m/s at ", temperature,
 capteurs = [
   {NAME: "X0Y0", TRIG: 23, ECHO: 24, X: 0,   Y: 0},
   {NAME: "X1Y1", TRIG: 5,  ECHO: 6,  X: 100, Y: 100},
-  {NAME: "X1Y0", TRIG: 7,  ECHO : 8, X: 100,  Y: 0}
+  {NAME: "X1Y0", TRIG: 20,  ECHO: 21, X: 100,  Y: 0},
+  {NAME: "X0Y1", TRIG: 12, ECHO: 13, X: 0, Y:100}
 ]
 
 # Initialise les capteurs
@@ -163,7 +164,7 @@ init_capteurs(capteurs)
 # GPIO cleanup function. This will also prevent
 # the user seeing lots of unnecessary error
 # messages.
-d=range(3)
+d=range(4)
 try:
   while True:
     for i in range(len(capteurs)):
@@ -174,6 +175,8 @@ try:
     print_position(P1)
     P2 = calcule_position(capteurs[0], capteurs[2], d[0], d[2])
     print_position(P2)
+    P3 = calcule_position(capteurs[0], capteurs[3], d[0], d[3])
+    print_position(P3)
 
     time.sleep(1)
     print("")
