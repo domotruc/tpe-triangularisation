@@ -11,7 +11,13 @@
 from __future__ import print_function
 import time
 from math import *
+from definition import *
 from hc_sr04_simul import *
+
+
+# ------------------------------------------------------------------------------
+#    Fonctions
+# ------------------------------------------------------------------------------
 
 def measure_average(capteur):
   """
@@ -69,7 +75,6 @@ def calcule_position(c1, c2, d1, d2):
     B=2*c1[Y]*((c1[X]-c2[X])/(c1[Y]-c2[Y]))-2*N*((c1[X]-c2[X])/(c1[Y]-c2[Y]))-2*c1[X]
     C=c1[X]**2+c1[Y]**2+N**2-d1**2-2*c1[Y]*N
     Disc=B**2-4*A*C
-    print(Disc)
 
     if Disc>0:
       p1={}
@@ -98,7 +103,6 @@ def calcule_position(c1, c2, d1, d2):
     B=-2*c2[Y]
     C=c2[X]**2+p1[X]**2-2*c2[X]*p1[X]+c2[Y]**2-d2**2
     Disc=B**2-4*A*C
-    print(Disc)
 
     if Disc>0:
       p1[Y]=(-B+sqrt(Disc))/(2*A)
@@ -112,50 +116,47 @@ def calcule_position(c1, c2, d1, d2):
 
     if Disc<0:
       return None
-      
-      
-      
 
-    
 
-  
+def print_position(P):
+  """
+  Affiche le tableau des position retourné par calcule_position
 
-  
+  Parameters:
+  -----------
+  P : tableau des positions retournées par calcule_position, voir cette fonction
 
-# -----------------------
-# Main Script
-# -----------------------
+  Returns:
+  --------
+  rien
+  """
 
-# Use BCM GPIO references
-# instead of physical pin numbers
-#GPIO.setmode(GPIO.BCM)
+  if P == None:
+    print(P)
+  else:
+    for p in P:
+      print("X: {: 4.1f}  Y: {: 4.1f}".format(p[X], p[Y]))
 
-# Clefs pour définir les caractéristiques d'un capteur de distance
-TRIG = "TRIG"   # Pin pour déclencher la mesure de distance
-ECHO = "ECHO"   # Pin pour lecture de l'echo
-X = "X"         # Coordonnée X du capteur (en cm)
-Y = "Y"         # Coordonnée Y du capteur (en cm)
+
+# ------------------------------------------------------------------------------
+#    Programme principal
+# ------------------------------------------------------------------------------
+
 
 # Speed of sound in cm/s at temperature
 temperature = 20
 speedSound = 33100 + (0.6*temperature)
 
-print("Ultrasonic Measurement")
-print("Speed of sound is", speedSound/100, "m/s at ", temperature, "deg")
+print("Vitesse du son prise en compte:", speedSound/100, "m/s at ", temperature, "deg")
 
-capteurs = [ {TRIG: 23, ECHO: 24, X: 0, Y: 0}, {TRIG: 5, ECHO: 6, X: 100, Y: 100}, {TRIG: 7, ECHO : 8, X: 50, Y: 0} ]
-# Configure les pins: TRIG -> output, ECHO -> input
-#for capteur in capteurs:
-#  GPIO.setup(capteur[TRIG], GPIO.OUT)
-#  GPIO.setup(capteur[ECHO], GPIO.IN)
+capteurs = [
+  {NAME: "X0Y0", TRIG: 23, ECHO: 24, X: 0,   Y: 0},
+  {NAME: "X1Y1", TRIG: 5,  ECHO: 6,  X: 100, Y: 100},
+  {NAME: "X1Y0", TRIG: 7,  ECHO : 8, X: 100,  Y: 0}
+]
 
-# Set trigger to False (Low)
-#for capteur in capteurs:
-#  GPIO.output(capteur[TRIG], False)
-
-# Allow module to settle
-time.sleep(0.5)
-
+# Initialise les capteurs
+init_capteurs(capteurs)
 
 # Wrap main content in a try block so we can
 # catch the user pressing CTRL-C and run the
@@ -167,12 +168,12 @@ try:
   while True:
     for i in range(len(capteurs)):
       d[i] = measure_average(capteurs[i])
-      print("Distance {0:1d}: {1:5.1f}".format(i, d[i]))
+      print("Distance {:s}: {:5.1f}".format(capteurs[i][NAME], d[i]))
 
-    P1=calcule_position(capteurs[0], capteurs[1], d[0], d[1])
-    print(P1)
-    P2=calcule_position(capteurs[0], capteurs[2], d[0], d[2])
-    print(P2)
+    P1 = calcule_position(capteurs[0], capteurs[1], d[0], d[1])
+    print_position(P1)
+    P2 = calcule_position(capteurs[0], capteurs[2], d[0], d[2])
+    print_position(P2)
 
     time.sleep(1)
     print("")

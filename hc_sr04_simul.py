@@ -6,18 +6,31 @@
 
 from random import *
 from math import *
-
-# Clefs pour définir les caractéristiques d'un capteur de distance
-TRIG = "TRIG"   # Pin pour déclencher la mesure de distance
-ECHO = "ECHO"   # Pin pour lecture de l'echo
-X = "X"         # Coordonnée X du capteur (en cm)
-Y = "Y"         # Coordonnée Y du capteur (en cm)
+from definition import *
 
 # Position simulée du véhicule (en cm)
 POS_VHCL = { X: 20, Y: 30 }
 
 # sigma du bruit de mesure (en cm)
 SIGMA = 1
+
+
+def init_capteurs(capteurs):
+  """
+  Initialise les capteurs
+
+  Parameters:
+  -----------
+  capteurs : tableau des capteurs
+    capteur[TRIG]: pin pour déclencher la mesure de distance
+    capteur[ECHO]: pin pour lecture de l'echo
+
+  Returns:
+  -------
+  rien
+  """
+
+  # Rien à faire pour les capteurs simulés
 
 
 def mesure(capteur):
