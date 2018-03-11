@@ -12,7 +12,8 @@ from __future__ import print_function
 import time
 from math import *
 from definition import *
-from hc_sr04_simul import *
+#from hc_sr04_simul import *
+from hc_sr04 import *
 
 
 # ------------------------------------------------------------------------------
@@ -34,14 +35,20 @@ def measure_average(capteur):
   float : distance en cm
   """
 
-  distance1=mesure(capteur)
-  time.sleep(0.1)
-  distance2=mesure(capteur)
-  time.sleep(0.1)
-  distance3=mesure(capteur)
-  distance = distance1 + distance2 + distance3
-  distance = distance / 3
-  return distance
+  dist = 0
+  n = 0
+  for i in range(0,5):
+    d = mesure(capteur)
+    print("{:s}: {:3.1f}".format(capteur[NAME], d))
+    if d < maxDistance:
+      dist = dist + d
+      n = n + 1
+    time.sleep(0.2)
+
+  if n > 0:
+    return dist / n
+  else:
+    return 0
 
 
 def calcule_position(c1, c2, d1, d2):
@@ -69,6 +76,7 @@ def calcule_position(c1, c2, d1, d2):
     p2[X]: coordonnée X du point 2 (en cm)
     p2[Y]: coordonnée Y du point 2 (en cm)
   """
+
   if c1[Y] != c2[Y] :
     N=(d2**2-d1**2-c2[X]**2+c1[X]**2-c2[Y]**2+c1[Y]**2)/(2*(c1[Y]-c2[Y]))
     A=((c1[X]-c2[X])/(c1[Y]-c2[Y]))**2+1
@@ -98,7 +106,8 @@ def calcule_position(c1, c2, d1, d2):
   else :
     p1={}
     p2={}
-    p1[X]=(d2**2-d1**2-c2[X]**2-c1[X]**2)/(2*(c1[X]-c2[X]))
+    p1[X]=(d2**2-d1**2-c2[X]**2+c1[X]**2)/(2*(c1[X]-c2[X]))
+    p2[X]=p1[X]
     A=1
     B=-2*c2[Y]
     C=c2[X]**2+p1[X]**2-2*c2[X]*p1[X]+c2[Y]**2-d2**2
@@ -107,7 +116,6 @@ def calcule_position(c1, c2, d1, d2):
     if Disc>0:
       p1[Y]=(-B+sqrt(Disc))/(2*A)
       p2[Y]=(-B-sqrt(Disc))/(2*A)
-      p2[X]=p1[X]
       return (p1, p2)
 
     if Disc==0:
@@ -135,7 +143,7 @@ def print_position(P):
     print(P)
   else:
     for p in P:
-      print("X: {: 4.1f}  Y: {: 4.1f}".format(p[X], p[Y]))
+      print("X: {: 5.1f}  Y: {: 5.1f}".format(p[X], p[Y]))
 
 
 # ------------------------------------------------------------------------------
@@ -143,45 +151,39 @@ def print_position(P):
 # ------------------------------------------------------------------------------
 
 
-# Speed of sound in cm/s at temperature
-temperature = 20
-speedSound = 33100 + (0.6*temperature)
-
 print("Vitesse du son prise en compte:", speedSound/100, "m/s at ", temperature, "deg")
 
 capteurs = [
-  {NAME: "X0Y0", TRIG: 23, ECHO: 24, X: 0,   Y: 0},
-  {NAME: "X1Y1", TRIG: 5,  ECHO: 6,  X: 100, Y: 100},
-  {NAME: "X1Y0", TRIG: 20,  ECHO: 21, X: 100,  Y: 0},
-  {NAME: "X0Y1", TRIG: 12, ECHO: 13, X: 0, Y:100}
+  {NAME: "X0Y0", TRIG: 23, ECHO: 24, X:   0, Y:   0},
+  {NAME: "X0Y1", TRIG: 20, ECHO: 21, X:   0, Y: 100},
+  {NAME: "X1Y1", TRIG: 12, ECHO: 13, X: 100, Y: 100},
+  {NAME: "X1Y0", TRIG:  5, ECHO:  6, X: 100, Y:   0}
 ]
+
+# Nombre de capteurs
+nb_capteurs = len(capteurs)
 
 # Initialise les capteurs
 init_capteurs(capteurs)
 
-# Wrap main content in a try block so we can
-# catch the user pressing CTRL-C and run the
-# GPIO cleanup function. This will also prevent
-# the user seeing lots of unnecessary error
-# messages.
-d=range(4)
-try:
-  while True:
-    for i in range(len(capteurs)):
-      d[i] = measure_average(capteurs[i])
-      print("Distance {:s}: {:5.1f}".format(capteurs[i][NAME], d[i]))
+# Allocation du tableau de mesure des distances
+d = range(nb_capteurs)
 
-    P1 = calcule_position(capteurs[0], capteurs[1], d[0], d[1])
-    print_position(P1)
-    P2 = calcule_position(capteurs[0], capteurs[2], d[0], d[2])
-    print_position(P2)
-    P3 = calcule_position(capteurs[0], capteurs[3], d[0], d[3])
-    print_position(P3)
+# Mesure des distances par les capteurs
+for i in range(nb_capteurs):
+  d[i] = measure_average(capteurs[i]) + dimCaracteristique
+  print("Distance {:s}: {:5.1f}".format(capteurs[i][NAME], d[i]))
 
-    time.sleep(1)
-    print("")
+# Intersection des cercles
+for i in range(nb_capteurs):
+  prev_i = (i - 1) % nb_capteurs
+  next_i = (i + 1) % nb_capteurs
+  print("prev_i=", prev_i, ", i=", i, ", next_i=", next_i)
+  Pprev = calcule_position(capteurs[prev_i], capteurs[i], d[prev_i], d[i])
+  Pnext = calcule_position(capteurs[i], capteurs[next_i], d[i], d[next_i])
+  print_position(Pprev)
+  print_position(Pnext)
 
-except KeyboardInterrupt:
-  # User pressed CTRL-C
-  # Reset GPIO settings
-  GPIO.cleanup()
+print("")
+
+fin_capteurs(capteurs)

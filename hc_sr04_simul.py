@@ -52,3 +52,19 @@ def mesure(capteur):
   """
 
   return sqrt ((POS_VHCL[X] + gauss(0, SIGMA) - capteur[X])**2 + (POS_VHCL[Y] + gauss(0, SIGMA) - capteur[Y])**2)
+
+
+def fin_capteurs(capteurs):
+  """
+  Finalise l'utilisation des capteurs
+
+  Parameters:
+  -----------
+  capteurs : tableau des capteurs
+
+  Returns:
+  -------
+  rien
+  """
+
+  # Rien à faire pour les capteurs simulés

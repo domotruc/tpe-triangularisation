@@ -4,6 +4,7 @@
 # Librairie d'interface avec capteur ultrason HC-SR04
 
 import RPi.GPIO as GPIO
+import time
 from definition import *
 
 def init_capteurs(capteurs):
@@ -67,3 +68,18 @@ def mesure(capteur):
   distance = (elapsed * speedSound)/2
 
   return distance
+
+
+def fin_capteurs(capteurs):
+  """
+  Finalise l'utilisation des capteurs
+
+  Parameters:
+  -----------
+  capteurs : tableau des capteurs
+
+  Returns:
+  -------
+  rien
+  """
+  GPIO.cleanup()
